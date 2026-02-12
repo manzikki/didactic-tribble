@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Thai Consonant Drill</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .card {
+        background: white;
+        padding: 30px;
+        width: 420px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .title {
+        font-size: 26px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .start-btn {
+        padding: 14px 26px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #007bff;
+        color: white;
+    }
+
+    .start-btn:hover {
+        background: #0069d9;
+    }
+
+    .hearts {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .letter {
+        font-size: 96px;
+        margin: 10px 0;
+    }
+
+    .choices button {
+        width: 100%;
+        margin: 8px 0;
+        padding: 12px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background: #e9ecef;
+    }
+
+    .choices button:hover:enabled {
+        background: #dee2e6;
+    }
+
+    .choices button:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .feedback {
+        font-size: 18px;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    .correct { color: green; }
+    .incorrect { color: red; }
+
+    .thai-name {
+        font-size: 22px;
+        margin-top: 5px;
+    }
+
+    .game-over {
+        font-size: 26px;
+        color: red;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<!-- TITLE CARD -->
+<div id="titleCard" class="card">
+    <div class="title">CSII Team X presents</div>
+    <div class="subtitle">Thai Consonants</div>
+    <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+</div>
+
+<!-- QUIZ CARD -->
+<div id="quizCard" class="card hidden">
+    <div id="hearts" class="hearts"></div>
+
+    <h2>Thai Consonant Drill</h2>
+    <div id="letter" class="letter"></div>
+
+    <div class="choices">
+        <button onclick="checkAnswer(0)" id="btn0"></button>
+        <button onclick="checkAnswer(1)" id="btn1"></button>
+        <button onclick="checkAnswer(2)" id="btn2"></button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+    <div id="thaiName" class="thai-name"></div>
+    <div id="gameOver" class="game-over"></div>
+</div>
+
+<script>
+const consonants = [
+    { letter: "ก", thai: "ก ไก่", latin: "gor gai" },
+    { letter: "ข", thai: "ข ไข่", latin: "khor khai" },
+    { letter: "ค", thai: "ค ควาย", latin: "khor kwai" },
+    { letter: "ง", thai: "ง งู", latin: "ngor ngu" },
+    { letter: "จ", thai: "จ จาน", latin: "jor jan" },
+    { letter: "ฉ", thai: "ฉ ฉิ่ง", latin: "chor ching" },
+    { letter: "ช", thai: "ช ช้าง", latin: "chor chang" },
+    { letter: "ซ", thai: "ซ โซ่", latin: "sor so" },
+    { letter: "ด", thai: "ด เด็ก", latin: "dor dek" },
+    { letter: "ต", thai: "ต เต่า", latin: "tor tao" },
+    { letter: "ถ", thai: "ถ ถุง", latin: "thor thung" },
+    { letter: "ท", thai: "ท ทหาร", latin: "thor tahan" },
+    { letter: "น", thai: "น หนู", latin: "nor nu" },
+    { letter: "บ", thai: "บ ใบไม้", latin: "bor bai-mai" },
+    { letter: "ป", thai: "ป ปลา", latin: "por pla" },
+    { letter: "ผ", thai: "ผ ผึ้ง", latin: "phor phueng" },
+    { letter: "ฝ", thai: "ฝ ฝา", latin: "for fa" },
+    { letter: "พ", thai: "พ พาน", latin: "phor phan" },
+    { letter: "ฟ", thai: "ฟ ฟัน", latin: "for fan" },
+    { letter: "ม", thai: "ม ม้า", latin: "mor ma" },
+    { letter: "ย", thai: "ย ยักษ์", latin: "yor yak" },
+    { letter: "ร", thai: "ร เรือ", latin: "ror ruea" },
+    { letter: "ล", thai: "ล ลิง", latin: "lor ling" },
+    { letter: "ว", thai: "ว แหวน", latin: "wor waen" },
+    { letter: "ส", thai: "ส เสือ", latin: "sor suea" },
+    { letter: "ห", thai: "ห หีบ", latin: "hor hip" },
+    { letter: "อ", thai: "อ อ่าง", latin: "or ang" },
+    { letter: "ฮ", thai: "ฮ นกฮูก", latin: "hor nok-huk" }
+];
+
+let current, options = [], correctIndex = 0;
+let lives = 3;
+let gameEnded = false;
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+
+function updateHearts() {
+    document.getElementById("hearts").textContent = "❤️".repeat(lives);
+}
+
+function startQuiz() {
+    document.getElementById("titleCard").classList.add("hidden");
+    document.getElementById("quizCard").classList.remove("hidden");
+    updateHearts();
+    nextCard();
+}
+
+function nextCard() {
+    if (gameEnded) return;
+
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("thaiName").textContent = "";
+
+    current = consonants[Math.floor(Math.random() * consonants.length)];
+    document.getElementById("letter").textContent = current.letter;
+
+    let wrong = consonants.filter(c => c !== current);
+    shuffle(wrong);
+
+    options = [current.latin, wrong[0].latin, wrong[1].latin];
+    shuffle(options);
+
+    correctIndex = options.indexOf(current.latin);
+
+    for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById("btn" + i);
+        btn.textContent = options[i];
+        btn.disabled = false;
+    }
+}
+
+function checkAnswer(index) {
+    if (gameEnded) return;
+
+    const feedback = document.getElementById("feedback");
+    const thaiName = document.getElementById("thaiName");
+
+    if (index === correctIndex) {
+        feedback.textContent = "✔ Correct";
+        feedback.className = "feedback correct";
+        thaiName.textContent = current.thai;
+        setTimeout(nextCard, 1200);
+    } else {
+        lives--;
+        updateHearts();
+        feedback.textContent = "✘ Incorrect";
+        feedback.className = "feedback incorrect";
+
+        if (lives === 0) {
+            gameEnded = true;
+            document.getElementById("gameOver").textContent = "Game Over";
+            for (let i = 0; i < 3; i++) {
+                document.getElementById("btn" + i).disabled = true;
+            }
+        }
+    }
+}
+</script>
+
+</body>
+</html>
