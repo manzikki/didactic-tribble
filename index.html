@@ -99,6 +99,11 @@
         margin-top: 15px;
     }
 
+    .remaining {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
     .hidden {
         display: none;
     }
@@ -116,6 +121,7 @@
 <!-- QUIZ CARD -->
 <div id="quizCard" class="card hidden">
     <div id="hearts" class="hearts"></div>
+    <div id="remaining" class="remaining"></div>
 
     <h2>Thai Consonant Drill</h2>
     <div id="letter" class="letter"></div>
@@ -166,12 +172,18 @@ const consonants = [
 let current, options = [], correctIndex = 0;
 let lives = 3;
 let gameEnded = false;
+let remainingConsonants = []; // pool of yet-to-be-correctly-answered consonants
 
 function shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]];
     }
+}
+
+function updateRemaining() {
+    document.getElementById("remaining").textContent =
+        `Remaining: ${remainingConsonants.length}`;
 }
 
 function updateHearts() {
@@ -181,7 +193,10 @@ function updateHearts() {
 function startQuiz() {
     document.getElementById("titleCard").classList.add("hidden");
     document.getElementById("quizCard").classList.remove("hidden");
+    // initialize remaining pool
+    remainingConsonants = consonants.slice();
     updateHearts();
+    updateRemaining();
     nextCard();
 }
 
@@ -191,7 +206,19 @@ function nextCard() {
     document.getElementById("feedback").textContent = "";
     document.getElementById("thaiName").textContent = "";
 
-    current = consonants[Math.floor(Math.random() * consonants.length)];
+    if (remainingConsonants.length === 0) {
+        gameEnded = true;
+        document.getElementById("gameOver").textContent = "Congratulations! You’ve gone through all consonants.";
+        for (let i = 0; i < 3; i++) {
+            document.getElementById("btn" + i).disabled = true;
+        }
+        updateRemaining();
+        return;
+    }
+
+    // pick a random consonant from remaining pool
+    const idx = Math.floor(Math.random() * remainingConsonants.length);
+    current = remainingConsonants[idx];
     document.getElementById("letter").textContent = current.letter;
 
     let wrong = consonants.filter(c => c !== current);
@@ -219,6 +246,9 @@ function checkAnswer(index) {
         feedback.textContent = "✔ Correct";
         feedback.className = "feedback correct";
         thaiName.textContent = current.thai;
+        // remove from remaining pool so we won't ask again
+        remainingConsonants = remainingConsonants.filter(c => c !== current);
+        updateRemaining();
         setTimeout(nextCard, 1200);
     } else {
         lives--;
