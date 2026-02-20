@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Thai 1-syllable Words Quiz</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .card {
+        background: white;
+        padding: 30px;
+        width: 420px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .title {
+        font-size: 26px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .start-btn {
+        padding: 14px 26px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #007bff;
+        color: white;
+    }
+
+    .start-btn:hover {
+        background: #0069d9;
+    }
+
+    .hearts {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .letter {
+        font-size: 96px;
+        margin: 10px 0;
+    }
+
+    .choices button {
+        width: 100%;
+        margin: 8px 0;
+        padding: 12px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background: #e9ecef;
+    }
+
+    .choices button:hover:enabled {
+        background: #dee2e6;
+    }
+
+    .choices button:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .feedback {
+        font-size: 18px;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    .correct { color: green; }
+    .incorrect { color: red; }
+
+    .thai-name {
+        font-size: 18px;
+        margin-top: 8px;
+    }
+
+    .explanation {
+        font-size: 14px;
+        margin-top: 8px;
+        color: #333;
+        text-align: left;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 6px;
+    }
+
+    .game-over {
+        font-size: 26px;
+        color: red;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .remaining {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<!-- TITLE CARD -->
+<div id="titleCard" class="card">
+    <div class="title">CSII Team X presents</div>
+    <div class="subtitle">Thai 1-syllable Words</div>
+    <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+</div>
+
+<!-- QUIZ CARD -->
+<div id="quizCard" class="card hidden">
+    <div id="hearts" class="hearts"></div>
+    <div id="remaining" class="remaining"></div>
+
+    <h2>Identify the word</h2>
+    <div id="letter" class="letter"></div>
+
+    <div class="choices">
+        <button onclick="checkAnswer(0)" id="btn0"></button>
+        <button onclick="checkAnswer(1)" id="btn1"></button>
+        <button onclick="checkAnswer(2)" id="btn2"></button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+    <div id="thaiName" class="thai-name"></div>
+    <div id="explain" class="explanation"></div>
+    <div id="gameOver" class="game-over"></div>
+</div>
+
+<script>
+// Small set of 1-syllable Thai words (no tone mark) with explanations for the tone
+const words = [
+    { word: "มา", translit: "maa", meaning: "come", class: "low", syllable: "live", tone: "mid", explanation: "Initial low-class consonant 'ม' + long vowel 'า' in an open (live) syllable → mid tone." },
+    { word: "กา", translit: "gaa", meaning: "crow", class: "middle", syllable: "live", tone: "mid", explanation: "Initial middle-class consonant 'ก' + long vowel 'า' in an open (live) syllable → mid tone." },
+    { word: "ขา", translit: "khaa", meaning: "leg", class: "high", syllable: "live", tone: "rising", explanation: "Initial high-class consonant 'ข' + long vowel 'า' in an open (live) syllable → rising tone." },
+    { word: "ปลา", translit: "plaa", meaning: "fish", class: "middle", syllable: "live", tone: "mid", explanation: "Initial middle-class consonant 'ป' + long vowel 'า' in an open (live) syllable → mid tone." },
+    { word: "ลา", translit: "laa", meaning: "farewell", class: "low", syllable: "live", tone: "mid", explanation: "Initial low-class consonant 'ล' + long vowel 'า' in an open (live) syllable → mid tone." },
+    { word: "นา", translit: "naa", meaning: "rice field", class: "low", syllable: "live", tone: "mid", explanation: "Initial low-class consonant 'น' + long vowel 'า' in an open (live) syllable → mid tone." },
+    { word: "หา", translit: "haa", meaning: "find", class: "high", syllable: "live", tone: "rising", explanation: "Initial high-class consonant 'ห' + long vowel 'า' in an open (live) syllable → rising tone." },
+    { word: "ดู", translit: "duu", meaning: "see", class: "middle", syllable: "live", tone: "mid", explanation: "Initial middle-class consonant 'ด' + long vowel 'ู' in an open (live) syllable → mid tone." },
+    { word: "สาม", translit: "saam", meaning: "three", class: "high", syllable: "live", tone: "rising", explanation: "Initial high-class consonant 'ส' + long vowel 'า' with final nasal 'ม' (a live ending) → rising tone." },
+    { word: "ยาว", translit: "yaaw", meaning: "long", class: "low", syllable: "live", tone: "mid", explanation: "Initial low-class consonant 'ย' + long vowel 'า' with final 'ว' (live ending) → mid tone." },
+    { word: "มี", translit: "mii", meaning: "have", class: "low", syllable: "live", tone: "mid", explanation: "Initial low-class consonant 'ม' + long vowel 'ี' in an open syllable → mid tone." },
+    { word: "ดี", translit: "dii", meaning: "good", class: "middle", syllable: "live", tone: "mid", explanation: "Initial middle-class consonant 'ด' + long vowel 'ี' in an open syllable → mid tone." },
+    { word: "ปี", translit: "bpee", meaning: "year", class: "middle", syllable: "live", tone: "mid", explanation: "Initial middle-class consonant 'ป' + long vowel 'ี' in an open syllable → mid tone." },
+    { word: "มือ", translit: "meu", meaning: "hand", class: "low", syllable: "live", tone: "mid", explanation: "Initial low-class consonant 'ม' + long vowel 'ือ' in an open syllable → mid tone." },
+    { word: "ตา", translit: "taa", meaning: "eye", class: "middle", syllable: "live", tone: "mid", explanation: "Initial middle-class consonant 'ต' + long vowel 'า' in an open syllable → mid tone." },
+    { word: "หมา", translit: "maa", meaning: "dog", class: "low", syllable: "live", tone: "mid", explanation: "Orthographic cluster 'หม' (high-class 'ห' + low-class 'ม') yields the low-class consonant 'ม' + long vowel 'า' in an open syllable → mid tone." },
+    { word: "กิน", translit: "gin", meaning: "eat", class: "middle", syllable: "live", tone: "mid", explanation: "Initial middle-class consonant 'ก' + short vowel 'ิ' with final nasal 'น' (live ending) → mid tone." },
+    { word: "ผัก", translit: "phak", meaning: "vegetable", class: "high", syllable: "dead", tone: "falling", explanation: "Initial high-class consonant 'ผ' + short vowel 'ั' and dead syllable ending '-k' → falling tone." },
+    { word: "คน", translit: "khon", meaning: "person", class: "low", syllable: "live", tone: "mid", explanation: "Initial low-class consonant 'ค' + vowel and final nasal 'น' (live ending) → mid tone." },
+    { word: "รัก", translit: "rak", meaning: "love", class: "middle", syllable: "dead", tone: "falling", explanation: "Initial middle-class consonant 'ร' + short vowel and final stop '-k' (dead syllable) → falling tone." }
+];
+
+let current, options = [], correctIndex = 0;
+let lives = 3;
+let gameEnded = false;
+let remainingWords = [];
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function updateRemaining() {
+    document.getElementById("remaining").textContent = `Remaining: ${remainingWords.length}`;
+}
+
+function updateHearts() {
+    document.getElementById("hearts").textContent = "❤️".repeat(lives);
+}
+
+function startQuiz() {
+    document.getElementById("titleCard").classList.add("hidden");
+    document.getElementById("quizCard").classList.remove("hidden");
+    remainingWords = words.slice();
+    updateHearts();
+    updateRemaining();
+    nextCard();
+}
+
+function nextCard() {
+    if (gameEnded) return;
+
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("thaiName").textContent = "";
+    document.getElementById("explain").textContent = "";
+
+    if (remainingWords.length === 0) {
+        gameEnded = true;
+        document.getElementById("gameOver").textContent = "Congratulations! You’ve gone through all words.";
+        for (let i = 0; i < 3; i++) {
+            document.getElementById("btn" + i).disabled = true;
+        }
+        updateRemaining();
+        return;
+    }
+
+    const idx = Math.floor(Math.random() * remainingWords.length);
+    current = remainingWords[idx];
+    document.getElementById("letter").textContent = current.word;
+
+    // pick two wrong options from other words
+    let wrongPool = words.filter(w => w !== current);
+    shuffle(wrongPool);
+
+    options = [current, wrongPool[0], wrongPool[1]];
+    shuffle(options);
+
+    correctIndex = options.indexOf(current);
+
+    for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById("btn" + i);
+        btn.textContent = `${options[i].translit} — ${capitalize(options[i].meaning)}`;
+        btn.disabled = false;
+    }
+}
+
+function checkAnswer(index) {
+    if (gameEnded) return;
+
+    const feedback = document.getElementById("feedback");
+    const thaiName = document.getElementById("thaiName");
+    const explain = document.getElementById("explain");
+
+    if (index === correctIndex) {
+        feedback.textContent = "✔ Correct";
+        feedback.className = "feedback correct";
+        thaiName.textContent = `${current.translit} — ${capitalize(current.meaning)} (Tone: ${capitalize(current.tone)})`;
+        explain.textContent = current.explanation;
+        // remove from remaining pool
+        remainingWords = remainingWords.filter(w => w !== current);
+        updateRemaining();
+        setTimeout(nextCard, 1400);
+    } else {
+        lives--;
+        updateHearts();
+        feedback.textContent = "✘ Incorrect";
+        feedback.className = "feedback incorrect";
+
+        if (lives === 0) {
+            gameEnded = true;
+            document.getElementById("gameOver").textContent = "Game Over";
+            for (let i = 0; i < 3; i++) {
+                document.getElementById("btn" + i).disabled = true;
+            }
+        }
+    }
+}
+</script>
+
+</body>
+</html>
