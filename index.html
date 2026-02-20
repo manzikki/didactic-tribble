@@ -139,34 +139,43 @@
 
 <script>
 const consonants = [
-    { letter: "ก", thai: "ก ไก่", latin: "gor gai" },
-    { letter: "ข", thai: "ข ไข่", latin: "khor khai" },
-    { letter: "ค", thai: "ค ควาย", latin: "khor kwai" },
-    { letter: "ง", thai: "ง งู", latin: "ngor ngu" },
-    { letter: "จ", thai: "จ จาน", latin: "jor jan" },
-    { letter: "ฉ", thai: "ฉ ฉิ่ง", latin: "chor ching" },
-    { letter: "ช", thai: "ช ช้าง", latin: "chor chang" },
-    { letter: "ซ", thai: "ซ โซ่", latin: "sor so" },
-    { letter: "ด", thai: "ด เด็ก", latin: "dor dek" },
-    { letter: "ต", thai: "ต เต่า", latin: "tor tao" },
-    { letter: "ถ", thai: "ถ ถุง", latin: "thor thung" },
-    { letter: "ท", thai: "ท ทหาร", latin: "thor tahan" },
-    { letter: "น", thai: "น หนู", latin: "nor nu" },
-    { letter: "บ", thai: "บ ใบไม้", latin: "bor bai-mai" },
-    { letter: "ป", thai: "ป ปลา", latin: "por pla" },
-    { letter: "ผ", thai: "ผ ผึ้ง", latin: "phor phueng" },
-    { letter: "ฝ", thai: "ฝ ฝา", latin: "for fa" },
-    { letter: "พ", thai: "พ พาน", latin: "phor phan" },
-    { letter: "ฟ", thai: "ฟ ฟัน", latin: "for fan" },
-    { letter: "ม", thai: "ม ม้า", latin: "mor ma" },
-    { letter: "ย", thai: "ย ยักษ์", latin: "yor yak" },
-    { letter: "ร", thai: "ร เรือ", latin: "ror ruea" },
-    { letter: "ล", thai: "ล ลิง", latin: "lor ling" },
-    { letter: "ว", thai: "ว แหวน", latin: "wor waen" },
-    { letter: "ส", thai: "ส เสือ", latin: "sor suea" },
-    { letter: "ห", thai: "ห หีบ", latin: "hor hip" },
-    { letter: "อ", thai: "อ อ่าง", latin: "or ang" },
-    { letter: "ฮ", thai: "ฮ นกฮูก", latin: "hor nok-huk" }
+    { letter: "ก", thai: "ก ไก่", latin: "gor gai", class: "middle" },
+    { letter: "ข", thai: "ข ไข่", latin: "khor khai", class: "high" },
+    { letter: "ค", thai: "ค ควาย", latin: "khor kwai", class: "low" },
+    { letter: "ง", thai: "ง งู", latin: "ngor ngu", class: "low" },
+    { letter: "จ", thai: "จ จาน", latin: "jor jan", class: "middle" },
+    { letter: "ฉ", thai: "ฉ ฉิ่ง", latin: "chor ching", class: "high" },
+    { letter: "ช", thai: "ช ช้าง", latin: "chor chang", class: "low" },
+    { letter: "ซ", thai: "ซ โซ่", latin: "sor so", class: "low" },
+    { letter: "ด", thai: "ด เด็ก", latin: "dor dek", class: "middle" },
+    { letter: "ต", thai: "ต เต่า", latin: "tor tao", class: "middle" },
+    { letter: "ถ", thai: "ถ ถุง", latin: "thor thung", class: "high" },
+    { letter: "ท", thai: "ท ทหาร", latin: "thor tahan", class: "low" },
+    { letter: "น", thai: "น หนู", latin: "nor nu", class: "low" },
+    { letter: "บ", thai: "บ ใบไม้", latin: "bor bai-mai", class: "middle" },
+    { letter: "ป", thai: "ป ปลา", latin: "por pla", class: "middle" },
+    { letter: "ผ", thai: "ผ ผึ้ง", latin: "phor phueng", class: "high" },
+    { letter: "ฝ", thai: "ฝ ฝา", latin: "for fa", class: "high" },
+    { letter: "พ", thai: "พ พาน", latin: "phor phan", class: "low" },
+    { letter: "ฟ", thai: "ฟ ฟัน", latin: "for fan", class: "low" },
+    { letter: "ม", thai: "ม ม้า", latin: "mor ma", class: "low" },
+    { letter: "ย", thai: "ย ยักษ์", latin: "yor yak", class: "low" },
+    { letter: "ร", thai: "ร เรือ", latin: "ror ruea", class: "low" },
+    { letter: "ล", thai: "ล ลิง", latin: "lor ling", class: "low" },
+    { letter: "ว", thai: "ว แหวน", latin: "wor waen", class: "low" },
+    { letter: "ส", thai: "ส เสือ", latin: "sor suea", class: "high" },
+    { letter: "ห", thai: "ห หีบ", latin: "hor hip", class: "high" },
+    { letter: "อ", thai: "อ อ่าง", latin: "or ang", class: "middle" },
+    { letter: "ฮ", thai: "ฮ นกฮูก", latin: "hor nok-huk", class: "low" },
+    // Additional consonants
+    { letter: "ฎ", thai: "ฎ ชฎา", latin: "do chada", class: "middle" },
+    { letter: "ฏ", thai: "ฏ ปฎัก", latin: "to patak", class: "middle" },
+    { letter: "ฐ", thai: "ฐ ฐาน", latin: "tho than", class: "high" },
+    { letter: "ฆ", thai: "ฆ ระฆัง", latin: "kho rakhang", class: "low" },
+    { letter: "ญ", thai: "ญ หญิง", latin: "yo ying", class: "low" },
+    { letter: "ศ", thai: "ศ ศาลา", latin: "so sala", class: "high" },
+    { letter: "ษ", thai: "ษ ฤษี", latin: "so ruesi", class: "high" },
+    { letter: "ฬ", thai: "ฬ จุฬา", latin: "lo chu-la", class: "low" }
 ];
 
 let current, options = [], correctIndex = 0;
@@ -179,6 +188,11 @@ function shuffle(arr) {
         const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]];
     }
+}
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function updateRemaining() {
@@ -224,14 +238,15 @@ function nextCard() {
     let wrong = consonants.filter(c => c !== current);
     shuffle(wrong);
 
-    options = [current.latin, wrong[0].latin, wrong[1].latin];
+    // options are consonant objects so we can show latin + class
+    options = [current, wrong[0], wrong[1]];
     shuffle(options);
 
-    correctIndex = options.indexOf(current.latin);
+    correctIndex = options.indexOf(current);
 
     for (let i = 0; i < 3; i++) {
         const btn = document.getElementById("btn" + i);
-        btn.textContent = options[i];
+        btn.textContent = `${options[i].latin} — ${capitalize(options[i].class)}`;
         btn.disabled = false;
     }
 }
@@ -245,7 +260,7 @@ function checkAnswer(index) {
     if (index === correctIndex) {
         feedback.textContent = "✔ Correct";
         feedback.className = "feedback correct";
-        thaiName.textContent = current.thai;
+        thaiName.textContent = `${current.thai} — ${capitalize(current.class)} class`;
         // remove from remaining pool so we won't ask again
         remainingConsonants = remainingConsonants.filter(c => c !== current);
         updateRemaining();
