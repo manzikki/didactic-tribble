@@ -115,11 +115,13 @@
 <div id="titleCard" class="card">
     <div class="title">CSII Team X presents</div>
     <div class="subtitle">Thai Consonants</div>
+    <input type="text" id="nicknameInput" placeholder="Enter your nickname" style="padding:8px; width:80%; font-size:16px; margin-bottom:15px;">
     <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
 </div>
 
 <!-- QUIZ CARD -->
 <div id="quizCard" class="card hidden">
+    <div id="nicknameDisplay" class="subtitle"></div>
     <div id="hearts" class="hearts"></div>
     <div id="remaining" class="remaining"></div>
 
@@ -182,6 +184,7 @@ let current, options = [], correctIndex = 0;
 let lives = 3;
 let gameEnded = false;
 let remainingConsonants = []; // pool of yet-to-be-correctly-answered consonants
+let nickname = ""; // player's nickname to show during quiz
 
 function shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -205,6 +208,10 @@ function updateHearts() {
 }
 
 function startQuiz() {
+    // capture nickname and display it
+    nickname = document.getElementById("nicknameInput").value.trim() || "Player";
+    document.getElementById("nicknameDisplay").textContent = nickname;
+
     document.getElementById("titleCard").classList.add("hidden");
     document.getElementById("quizCard").classList.remove("hidden");
     // initialize remaining pool
