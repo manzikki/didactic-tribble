@@ -213,7 +213,7 @@ function startQuiz() {
     document.getElementById("nicknameDisplay").textContent = nickname;
 
     // Notify backend that this user started the quiz and show their start count
-    fetch(`/api/quiz/start?nickname=${encodeURIComponent(nickname)}`, {
+    fetch(`https://didactic-tribble-service.onrender.com/api/quiz/start?nickname=${encodeURIComponent(nickname)}`, {
         method: 'POST'
     })
     .then(response => {
